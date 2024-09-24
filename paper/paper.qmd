@@ -30,11 +30,11 @@ Despite the importance of this issue, there is a clear gap in the public's detai
 
 This study aims to provide a visual and statistical analysis of the available data and to draw attention to the factors that may be contributing to the increased mortality. The analysis reveals two important findings: first, the number of deaths has steadily increased over the years, indicating a deteriorating situation within the shelter system; Second, men make up a larger proportion of the deceased, suggesting potential gender-specific vulnerabilities.
 
-These findings are important because they provide a clearer picture of the extent and nature of mortality in Toronto's shelter population, which can be used to inform future policy decisions and the allocation of resources. By identifying key trends and limitations within the dataset, this study provides a basis for more targeted and informed interventions to address the underlying causes of death in this population. The structure of this paper begins with a detailed description of the data@sec-data, followed by the statistic model@sec-model, results@sec-result, and discussion of implications@sec-discussion.
+These findings are important because they provide a clearer picture of the extent and nature of mortality in Toronto's shelter population, which can be used to inform future policy decisions and the allocation of resources. By identifying key trends and limitations within the dataset, this study provides a basis for more targeted and informed interventions to address the underlying causes of death in this population. The structure of this paper begins with a detailed description of the data @sec-data, followed by the statistic results @sec-result, and discussion of implications @sec-discussion.
 
 
 # Data {#sec-data}
-The dataset used for this analysis relates to deaths within Toronto's shelter system. It contains key demographic variables and aggregates information about the number of deaths reported each year, categorized by gender. However, due to privacy concerns and respect for the confidentiality of individuals who have passed, the dataset excludes personal identifying information including names, birthdates, or specific locations of death. This limitation necessitated the use of data for analysis focusing on factors including gender distribution and time rather than locations and age. 
+The dataset used for this analysis relates to deaths within Toronto's shelter system, from @toronto_shelter_deaths. It contains key demographic variables and aggregates information about the number of deaths reported each year, categorized by gender. However, due to privacy concerns and respect for the confidentiality of individuals who have passed, the dataset excludes personal identifying information including names, birthdates, or specific locations of death. This limitation necessitated the use of data for analysis focusing on factors including gender distribution and time rather than locations and age. 
 
 ## Variables
 The dataset include the following variables:
@@ -67,19 +67,21 @@ By recognizing these limitations, the analysis aims to provide a clearer context
 
 
 ## Similar Datasets
+The dataset titled Deaths of People Experiencing Homelessness, from @toronto_homelessness_deaths, provides information on the deaths of homeless individuals, which is somewhat similar to our current study of deaths among Toronto shelter residents. One notable advantage of this dataset is that it includes a detailed CSV file outlining the causes of death, offering valuable insights into the factors contributing to mortality in this population.
+
+However, the dataset containing the causes of death cannot be downloaded directly, which limits the accessibility and availability of our analysis. The accessible data variables align perfectly with our research dataset but only cover the period from 2017 to 2023. The lack of longitudinal data means it does not align with the comprehensive timeline of our study, which spans from January 2007 to August 2024. Therefore, although this dataset provides certain advantages, the limitations regarding its time span and accessibility led to its exclusion from our viable research options.
+
 
 
 
 ## Overall Visualization
-
-
-
+In the following section, I will present a series of visualizations that analyze the number of deaths among shelter residents over time, highlighting the gender distribution and overall data trends. These charts will provide a clearer understanding of the data composition and allow for an insightful examination of how the number of deaths in this population has evolved.
 
 ### Trend Over Time
 
-Figure 1 shows the total number of deaths of Toronto shelter residents each year from January 2007 to August 2024, divided into 15 sub-graphs, arranged in 5 rows and 3 columns by year. This layout allows readers to clearly compare the trend of deaths from one year to the next and observe potential seasonal changes.
+Figure @fig-shelter-death-line, created by @citeR, shows the total number of deaths of Toronto shelter residents each year from January 2007 to August 2024, divided into 15 sub-graphs, arranged in 5 rows and 3 columns by year. This layout allows readers to clearly compare the trend of deaths from one year to the next and observe potential seasonal changes.
 
-```{r fig-shelter-death-line, echo=FALSE, message=FALSE, warning=FALSE, fig.width=9, fig.height=6}
+```{r fig-shelter-death-line, fig.cap="Deaths in Toronto Shelters Over Time (2007.01-2024.08)", echo=FALSE, message=FALSE, warning=FALSE, fig.width=9, fig.height=6}
 # Read the analysis data of shelter residence death.
 shelter_death_data <- read_csv("../data/analysis_data/shelter_residences_death_analysis_data.csv", show_col_types = FALSE) 
 
@@ -90,7 +92,7 @@ shelter_death_data$month <- factor(shelter_death_data$month, levels = month.abb)
 ggplot(shelter_death_data, aes(x = month, y = total_decedents, group = year)) +
   geom_line(size = 1, color = "black") +  # get line graph
   geom_point(size = 2, color = "pink") +  # add points on value in each year
-  labs(title = "Total Deaths in Toronto Shelters (2007-2024)",
+  labs(title = "Deaths in Toronto Shelters Over Time (2007.01-2024.08)",
        x = "Month",
        y = "Total Deaths") +  # add title and name of the axis
   theme_minimal() + 
@@ -113,10 +115,13 @@ Based on the generated line graphs, the following conclusions can be drawn:
 These conclusions provide important insights into the overall mortality trends of Toronto shelter residents and suggest that relevant agencies need to consider multiple influencing factors when developing policies and interventions.
 
 
-### Gender Composition
-Figure 2
+### Annual Deaths with Gender Composition
+Figure @fig-annual-death, created by @citeR, below illustrates the annual number of deaths from 2007 to 2023. And Figure @fig-shelter-death-bar, created by @citeR, illustrates the annual number of deaths of the same time period, with distinct color coding to represent gender distribution: pink for male, black for female, and gray for other gender identities, including transgender and non-binary.
 
-```{r fig-shelter-death-bar, echo=FALSE, message=FALSE, warning=FALSE, fig.width=10, fig.height=6}
+Several important conclusions can be drawn from the visualization. First, the proportion of male deaths remains consistently the highest throughout the years observed, indicating a significant gender disparity in mortality rates among shelter residents. In addition, there is a noticeable upward trend in the overall number of deaths, suggesting a growing concern for the well-being of this vulnerable population. It can also be seen clearly from the line graph of Figure @fig-annual-death. Notably, 2021 stands out as the peak year for mortality. This can be seen clearly in Figure @fig-annual-death too. This raises questions about the factors contributing to this spike and the broader implications for public health and social support systems.
+
+
+```{r fig-shelter-death-bar, fig.cap="Annual Death Counts in Toronto Shelters With Gender Distribution (2007-2023)", echo=FALSE, message=FALSE, warning=FALSE, fig.width=10, fig.height=6}
 annual_death_counts_bar <- shelter_death_data %>%
   filter(year >= 2007 & year <= 2023) %>%
   group_by(year) %>%
@@ -130,10 +135,10 @@ annual_death_counts_bar <- shelter_death_data %>%
                names_to = "gender", 
                values_to = "count")
 
-# Create bar chart showing annual death counts in Toronto shelters from 2007 to. 2023
+# Create bar chart showing annual death counts in Toronto shelters from 2007 to 2023.
 ggplot(annual_death_counts_bar, aes(x = factor(year), y = count, fill = gender)) +
   geom_bar(stat = "identity", position = "stack") +
-  labs(title = "Annual Death Counts in Toronto Shelters (2007-2023)",
+  labs(title = "Annual Death Counts in Toronto Shelters With Gender Distribution (2007-2023)",
        x = "year",
        y = "num of death",
        fill = "gender") +
@@ -147,11 +152,7 @@ ggplot(annual_death_counts_bar, aes(x = factor(year), y = count, fill = gender))
   )
 ```
 
-
-### Compariasion Over Year
-
-
-```{r fig-annual-death, echo=FALSE, message=FALSE, warning=FALSE}
+```{r fig-annual-death, fig.cap="Annual Deaths in Toronto Shelters (2007-2023)", echo=FALSE, message=FALSE, warning=FALSE}
 
 # calculate the annual death
 annual_deaths <- shelter_death_data %>%
@@ -163,7 +164,7 @@ annual_deaths <- shelter_death_data %>%
 ggplot(annual_deaths, aes(x = year, y = total_yearly_deaths)) +
   geom_line(size = 1, color = "black") +  # get line graph
   geom_point(size = 3, color = "pink") +  # add points on value in each year
-  labs(title = "Total Deaths in Toronto Shelters (2007-2023)",
+  labs(title = "Annual Deaths in Toronto Shelters (2007-2023)",
        x = "Year",
        y = "Total Deaths") +  # add title and name of the axis
   theme_minimal() + 
@@ -203,47 +204,6 @@ ggplot(month_deaths, aes(x = month, y = total_monthly_deaths, group = 1)) +
     axis.text = element_text(size = 10)
   )
 ```
-
-
-
-
-
-```{r}
-
-```
-
-Talk way more about it. 
-
-
-
-# Model{#sec-model}
-
-The goal of our modelling strategy is twofold. Firstly,...
-
-Here we briefly describe the Bayesian analysis model used to investigate... Background details and diagnostics are included in [Appendix -@sec-model-details].
-
-## Model set-up
-
-Define $y_i$ as the number of seconds that the plane remained aloft. Then $\beta_i$ is the wing width and $\gamma_i$ is the wing length, both measured in millimeters.  
-
-\begin{align} 
-y_i|\mu_i, \sigma &\sim \mbox{Normal}(\mu_i, \sigma) \\
-\mu_i &= \alpha + \beta_i + \gamma_i\\
-\alpha &\sim \mbox{Normal}(0, 2.5) \\
-\beta &\sim \mbox{Normal}(0, 2.5) \\
-\gamma &\sim \mbox{Normal}(0, 2.5) \\
-\sigma &\sim \mbox{Exponential}(1)
-\end{align}
-
-We run the model in R [@citeR] using the `rstanarm` package of . We use the default priors from `rstanarm`.
-
-
-### Model justification
-
-We expect a positive relationship between the size of the wings and time spent aloft. In particular...
-
-We can use maths by including latex between dollar signs, for instance $\theta$.
-
 
 # Results{#sec-result}
 
@@ -292,46 +252,6 @@ Weaknesses and next steps should also be included.
 
 
 # Additional data details
-
-# Model details {#sec-model-details}
-
-## Posterior predictive check
-
-In @fig-ppcheckandposteriorvsprior-1 we implement a posterior predictive check. This shows...
-
-In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. This shows... 
-
-```{r}
-#| eval: true
-#| echo: false
-#| message: false
-#| warning: false
-#| label: fig-ppcheckandposteriorvsprior
-#| layout-ncol: 2
-#| fig-cap: "Examining how the model fits, and is affected by, the data"
-#| fig-subcap: ["Posterior prediction check", "Comparing the posterior with the prior"]
-
-
-```
-
-## Diagnostics
-
-@fig-stanareyouokay-1 is a trace plot. It shows... This suggests...
-
-@fig-stanareyouokay-2 is a Rhat plot. It shows... This suggests...
-
-```{r}
-#| echo: false
-#| eval: true
-#| message: false
-#| warning: false
-#| label: fig-stanareyouokay
-#| fig-cap: "Checking the convergence of the MCMC algorithm"
-#| fig-subcap: ["Trace plot", "Rhat plot"]
-#| layout-ncol: 2
-
-```
-
 
 
 \newpage
