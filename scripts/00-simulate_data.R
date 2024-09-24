@@ -26,7 +26,7 @@ years <- format(dates, "%Y")
 
 months <- format(dates, "%b")
 
-simulated_shelter_death <- rpois(length(months),lambda =  1)
+simulated_shelter_death <- rpois(length(months),lambda =  3)
 
 male_death <- round(simulated_shelter_death * 0.65)
 

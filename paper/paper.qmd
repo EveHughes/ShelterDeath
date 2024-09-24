@@ -1,13 +1,12 @@
 ---
-title: "My title"
-subtitle: "My subtitle if needed"
+title: "Analysis on Trend of Death of Shelter Residence in Toronto "
+subtitle: "focus on gender distribution from 2007 to 2024"
 author: 
-  - First author
-  - Another author
-thanks: "Code and data are available at: LINK."
+  - Xinqi Yue
+thanks: "Code and data are available at: https://github.com/xinqiyue/ShelterDeath."
 date: today
 date-format: long
-abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
+abstract: "Trough the analysis on the data about deaths of shelter residents, we found that the total number of deaths of shelter residences is increasing year by year. The proportion of male deaths is relatively higher. The study will help understanding the dynamic of mortality and making better policy and intervine to avoid similar problems in the future."
 format: pdf
 number-sections: true
 bibliography: references.bib
@@ -25,56 +24,151 @@ library(palmerpenguins)
 
 # Introduction
 
-You can and should cross-reference sections and sub-sections. We use @citeR and @rohan.
+The rising number of deaths within Toronto's shelter system is a growing area of concern, reflecting broader societal challenges such as homelessness, mental health crises, and inadequate access to health care. Understanding the dynamics of these deaths is critical to developing effective policies and interventions aimed at reducing mortality in this vulnerable population. This paper focuses on analyzing the dataset related to deaths in Toronto's shelter residence, and seeks to identify the demographic trends and factors contributing to these unfortunate outcomes.
 
-The remainder of this paper is structured as follows. @sec-data....
+Despite the importance of this issue, there is a clear gap in the public's detailed understanding of who is being affected and how patterns of mortality are evolving over time. Due to privacy concerns, the dataset is limited in scope and lacks identifying information such as names, dates of birth, and specific causes of death. Also, the Non-binary genders are not included until 2020. Nevertheless, these aggregate data allow for an examination of key trends, such as the gender distribution of deaths and the change over time. These trends highlight critical disparities, particularly the higher proportion of male deaths and the steady increase in overall mortality number.
 
+This study aims to provide a visual and statistical analysis of the available data and to draw attention to the factors that may be contributing to the increased mortality. The analysis reveals two important findings: first, the number of deaths has steadily increased over the years, indicating a deteriorating situation within the shelter system; Second, men make up a larger proportion of the deceased, suggesting potential gender-specific vulnerabilities.
+
+These findings are important because they provide a clearer picture of the extent and nature of mortality in Toronto's shelter population, which can be used to inform future policy decisions and the allocation of resources. By identifying key trends and limitations within the dataset, this study provides a basis for more targeted and informed interventions to address the underlying causes of death in this population. The structure of this paper begins with a detailed description of the data@sec-data, followed by the statistic model@sec-data, results@sec-data, and discussion of implications@sec-data.
 
 
 # Data {#sec-data}
 
-Some of our data is of penguins (@fig-bills), from @palmerpenguins.
+The dataset used for this analysis relates to deaths within Toronto's shelter system. It contains key demographic variables and aggregates information about the number of deaths reported each year, categorized by gender. However, due to privacy concerns and respect for the confidentiality of individuals who have passed, the dataset excludes personal identifying information including names, birthdates, or specific locations of death. This limitation necessitated the use of data for analysis focusing on factors including gender distribution and time rather than locations and age. 
 
-```{r}
-#| label: fig-bills
-#| fig-cap: Bills of penguins
-#| echo: false
+##Variables
+The dataset include the following variables:
 
-ggplot(penguins, aes(x = island, fill = species)) +
-  geom_bar(alpha = 0.8) +
-  scale_fill_manual(values = c("darkorange","purple","cyan4"),
-                    guide = "none") +
-  theme_minimal() +
-  facet_wrap(~species, ncol = 1) +
-  coord_flip()
+Year: The year in which the death occurred at a Toronto shelter, ranging from 2007 to 2024. This variable aids in analyzing trends over time.
+Month: The month in which the death occurred, corresponding to each year from January to December. Data beyond August 2024 has not yet been recorded.
+Total Deaths: The total number of deaths recorded in the given month.
+Male Deaths: The total number of male shelter residents who died in the given month.
+Female Deaths: The total number of female shelter residents who died in the given month.
+Other Deaths: The number of deaths of individuals identified as Transgender, Non-binary, or Two-Spirit in the given month. Note that data for this category was not recorded prior to 2020.
+
+
+Some of our data is of penguins (@fig-bills), from 
+
+```{r fig-annual-death, echo=FALSE, message=FALSE, warning=FALSE}
+shelter_death_data <- read_csv("../data/analysis_data/shelter_residences_death_analysis_data.csv", show_col_types = FALSE) 
+
+# calculate the annual death
+annual_deaths <- shelter_death_data %>%
+  filter(year >= 2007 & year <= 2023) %>%
+  group_by(year) %>%
+  summarise(total_yearly_deaths = sum(total_decedents), na.rm = TRUE) 
+
+# get line graph, showing the annual death trend
+ggplot(annual_deaths, aes(x = year, y = total_yearly_deaths)) +
+  geom_line(size = 1, color = "black") +  # get line graph
+  geom_point(size = 3, color = "pink") +  # add points on value in each year
+  labs(title = "Total Deaths in Toronto Shelters (2007-2023)",
+       x = "Year",
+       y = "Total Deaths") +  # as title and name of the axis
+  theme_minimal() + 
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+    axis.title = element_text(size = 12),
+    axis.text = element_text(size = 10)
+  )
 ```
+
+
+
+```{r fig-monthly-death, echo=FALSE, message=FALSE, warning=FALSE}
+
+# calculate the annual death
+month_deaths <- shelter_death_data %>%
+  filter(year >= 2007 & year <= 2023) %>%
+  group_by(month) %>%
+  summarise(total_monthly_deaths = sum(total_decedents)) 
+
+month_deaths$month <- factor(month_deaths$month, levels = month.abb)
+
+# get line graph, showing the annual death trend
+ggplot(month_deaths, aes(x = month, y = total_monthly_deaths, group = 1)) +
+  geom_line(size = 1, color = "black") +  # get line graph
+  geom_point(size = 3, color = "pink") +  # add points on value in each year
+  labs(title = "Total Deaths in Toronto Shelters (2007-2023)",
+       x = "Month",
+       y = "Total Deaths") +  # as title and name of the axis
+  theme_minimal() + 
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+    axis.title = element_text(size = 12),
+    axis.text = element_text(size = 10)
+  )
+```
+
+```{r fig-shelter-death1, echo=FALSE, message=FALSE, warning=FALSE}
+
+shelter_death_data07to15 <- shelter_death_data %>%
+  filter(year >= 2007 & year <= 2015)
+
+shelter_death_data15to24 <- shelter_death_data %>%
+  filter(year >= 2016)
+
+# get line graph, showing the annual death trend
+ggplot(shelter_death_data07to15, aes(x = month, y = total_decedents, group = year)) +
+  geom_line(size = 1, color = "black") +  # get line graph
+  geom_point(size = 1, color = "pink") +  # add points on value in each year
+  labs(title = "Total Deaths in Toronto Shelters (2007-2015)",
+       x = "Month",
+       y = "Total Deaths") +  # as title and name of the axis
+  theme_minimal() + 
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+    axis.title = element_text(size = 12),
+    axis.text = element_text(size = 10),
+    axis.title.y = element_text(size = 12),  # 只显示y轴的标签
+    axis.text.x = element_blank(),  # 移除x轴刻度
+    axis.ticks.x = element_blank(),  # 移除x轴刻度线
+    panel.spacing = unit(1, "lines")  # 增加子图间的间隔
+  ) +
+  facet_wrap(~ year, ncol = 3)
+```
+
+```{r fig-shelter-death2, echo=FALSE, message=FALSE, warning=FALSE}
+# get line graph, showing the annual death trend
+ggplot(shelter_death_data15to24, aes(x = month, y = total_decedents, group = year)) +
+  geom_line(size = 1, color = "black") +  # get line graph
+  geom_point(size = 1, color = "pink") +  # add points on value in each year
+  labs(title = "Total Deaths in Toronto Shelters (2015-2024)",
+       x = "Month",
+       y = "Total Deaths") +  # as title and name of the axis
+  theme_minimal() + 
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+    axis.title = element_text(size = 12),
+    axis.text = element_text(size = 10),
+    axis.title.y = element_text(size = 12),  # 只显示y轴的标签
+    axis.text.x = element_blank(),  # 移除x轴刻度
+    axis.ticks.x = element_blank(),  # 移除x轴刻度线
+    panel.spacing = unit(1, "lines")  # 增加子图间的间隔
+  ) +
+  facet_wrap(~ year, ncol = 3)
+
+```
+
+
+
+
+
 
 Talk more about it.
 
 And also planes (@fig-planes). (You can change the height and width, but don't worry about doing that until you have finished every other aspect of the paper - Quarto will try to make it look nice and the defaults usually work well once you have enough text.)
 
 ```{r}
-#| label: fig-planes
-#| fig-cap: Relationship between wing length and width
-#| echo: false
-#| warning: false
-#| message: false
 
-analysis_data <- read_csv(here::here("data/analysis_data/analysis_data.csv"))
-
-analysis_data |> 
-  ggplot(aes(x = width, y = length)) +
-  geom_point(alpha = 0.8) +
-  theme_minimal() +
-  labs(x = "Wing width (mm)",
-       y = "Wing length (mm)")
 ```
 
 Talk way more about it. 
 
 
 
-# Model
+# Model{#sec-model}
 
 The goal of our modelling strategy is twofold. Firstly,...
 
@@ -93,7 +187,7 @@ y_i|\mu_i, \sigma &\sim \mbox{Normal}(\mu_i, \sigma) \\
 \sigma &\sim \mbox{Exponential}(1)
 \end{align}
 
-We run the model in R [@citeR] using the `rstanarm` package of @rstanarm. We use the default priors from `rstanarm`.
+We run the model in R [@citeR] using the `rstanarm` package of . We use the default priors from `rstanarm`.
 
 
 ### Model justification
@@ -103,7 +197,7 @@ We expect a positive relationship between the size of the wings and time spent a
 We can use maths by including latex between dollar signs, for instance $\theta$.
 
 
-# Results
+# Results{#sec-result}
 
 Our results are summarized in @tbl-modelresults.
 
@@ -113,10 +207,6 @@ Our results are summarized in @tbl-modelresults.
 #| warning: false
 #| message: false
 
-library(rstanarm)
-
-first_model <-
-  readRDS(file = here::here("models/first_model.rds"))
 ```
 
 ```{r}
@@ -126,19 +216,13 @@ first_model <-
 #| tbl-cap: "Explanatory models of flight time based on wing width and wing length"
 #| warning: false
 
-modelsummary::modelsummary(
-  list(
-    "First model" = first_model
-  ),
-  statistic = "mad",
-  fmt = 2
-)
+
 ```
 
 
 
 
-# Discussion
+# Discussion{#sec-discussion}
 
 ## First discussion point {#sec-first-point}
 
@@ -179,15 +263,7 @@ In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. Th
 #| fig-cap: "Examining how the model fits, and is affected by, the data"
 #| fig-subcap: ["Posterior prediction check", "Comparing the posterior with the prior"]
 
-pp_check(first_model) +
-  theme_classic() +
-  theme(legend.position = "bottom")
 
-posterior_vs_prior(first_model) +
-  theme_minimal() +
-  scale_color_brewer(palette = "Set1") +
-  theme(legend.position = "bottom") +
-  coord_flip()
 ```
 
 ## Diagnostics
@@ -206,9 +282,6 @@ posterior_vs_prior(first_model) +
 #| fig-subcap: ["Trace plot", "Rhat plot"]
 #| layout-ncol: 2
 
-plot(first_model, "trace")
-
-plot(first_model, "rhat")
 ```
 
 
