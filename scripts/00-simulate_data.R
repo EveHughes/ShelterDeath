@@ -12,7 +12,6 @@
 library(tidyverse)
 library(dplyr)
 library(lubridate)
-# [...UPDATE THIS...]
 
 #### Simulate data ####
 set.seed(507)
@@ -44,4 +43,4 @@ simulated_data <- data.frame(year = years,
 )
 
 #### Write_csv
-write.csv(simulated_data, "simulated_shelter_residences_death_data.csv", row.names = FALSE)
+write.csv(simulated_data, "data/simulated_data/simulated_shelter_residences_death_data.csv", row.names = FALSE)
