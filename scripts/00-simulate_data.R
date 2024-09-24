@@ -1,8 +1,8 @@
 #### Preamble ####
-# Purpose: Simulate Data
+# Purpose: Simulates data
 # Author: Xinqi Yue
-# Date: 19 September 2024
-# Contact: xinqi.yue@utoronto.ca
+# Date: 23 September 2024
+# Contact: xinqi.yue@mail.utoronto.ca
 # License: MIT
 # Pre-requisites: None
 # Any other information needed? None
@@ -10,27 +10,38 @@
 
 #### Workspace setup ####
 library(tidyverse)
+library(dplyr)
+library(lubridate)
 # [...UPDATE THIS...]
 
 #### Simulate data ####
-# [...ADD CODE HERE...]
+set.seed(507)
 
-set.seed(304)
+# Simulate data
+dates <- seq.Date(
+  from = as.Date("2007-01-01"),
+  to = as.Date("2024-08-01"),
+  by = "month"
+)
+years <- format(dates, "%Y")
 
-start_date <- as.Date("2023-01-01")
-end_data <- as.Date("2023-12-31")
+months <- format(dates, "%b")
 
-number_of_dates <- 100
+simulated_shelter_death <- rpois(length(months),lambda =  1)
 
-data <-
-  tibble(
-    data = as.Date(runif(n = number_of_dates, 
-                         min = as.numeric(start_date),
-                         max = as.numeric(end_data)), 
-                   origin = "1970-01-01"
-                   ),
+male_death <- round(simulated_shelter_death * 0.65)
 
-    number_of_marriage = rpois(n=100, lambda = 15)
-  )
+other_death <- round(simulated_shelter_death * 0.15)
 
+female_death <- simulated_shelter_death - male_death - other_death
 
+simulated_data <- data.frame(year = years, 
+                             month = months,
+                             total_death_num = simulated_shelter_death,
+                             male_death_num = male_death,
+                             female_death_num = female_death,
+                             other_death_num = other_death
+)
+
+#### Write_csv
+write.csv(simulated_data, "simulated_shelter_residences_death_data.csv", row.names = FALSE)
