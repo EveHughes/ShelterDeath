@@ -17,8 +17,12 @@ bibliography: references.bib
 #| warning: false
 #| message: false
 
+library(kableExtra)
 library(tidyverse)
 library(palmerpenguins)
+
+# Read the analysis data of shelter residence death.
+shelter_death_data <- read_csv("../data/analysis_data/shelter_residences_death_analysis_data.csv", show_col_types = FALSE) 
 ```
 
 
@@ -30,13 +34,13 @@ Despite the importance of this issue, there is a clear gap in the public's detai
 
 This study aims to provide a visual and statistical analysis of the available data and to draw attention to the factors that may be contributing to the increased mortality. The analysis reveals two important findings: first, the number of deaths has steadily increased over the years, indicating a deteriorating situation within the shelter system; Second, men make up a larger proportion of the deceased, suggesting potential gender-specific vulnerabilities.
 
-These findings are important because they provide a clearer picture of the extent and nature of mortality in Toronto's shelter population, which can be used to inform future policy decisions and the allocation of resources. By identifying key trends and limitations within the dataset, this study provides a basis for more targeted and informed interventions to address the underlying causes of death in this population. The structure of this paper begins with a detailed description of the data @sec-data, followed by the statistic results @sec-result, and discussion of implications @sec-discussion.
+These findings are important because they provide a clearer picture of the extent and nature of mortality in Toronto's shelter population, which can be used to inform future policy decisions and the allocation of resources. By identifying key trends and limitations within the dataset, this study provides a basis for more targeted and informed interventions to address the underlying causes of death in this population. This paper begins with a comprehensive overview of the dataset, including its variables (@sec-var), limitations (@sec-lim), the rationale for its selection (@sec-sim), and the data collection process (@sec-measurement). Following this, the data is presented with accompanying graphs and analysis (@sec-overview). The subsequent section outlines key findings (@sec-result), followed by a discussion of their broader implications (@sec-discussion). All visualizations were generated using @citeR, with the data sourced from the @toronto_shelter_deaths dataset.
 
 
 # Data {#sec-data}
 The dataset used for this analysis relates to deaths within Toronto's shelter system, from @toronto_shelter_deaths. It contains key demographic variables and aggregates information about the number of deaths reported each year, categorized by gender. However, due to privacy concerns and respect for the confidentiality of individuals who have passed, the dataset excludes personal identifying information including names, birthdates, or specific locations of death. This limitation necessitated the use of data for analysis focusing on factors including gender distribution and time rather than locations and age. 
 
-## Variables
+## Variables {#sec-var}
 The dataset include the following variables:
 
 1. **Year**: The year in which the death occurred at a Toronto shelter, ranging from 2007 to 2024. This variable aids in analyzing trends over time.
@@ -51,7 +55,10 @@ The dataset include the following variables:
 
 6. **Other Deaths**: The number of deaths of individuals identified as Transgender, Non-binary, or Two-Spirit in the given month. Note that data for this category was not recorded prior to 2020.
 
-## Limitation
+The variable follows the rule:
+Total Death = Male Deaths + Female Deaths + Other Deaths
+
+## Limitation {#sec-lim}
 The dataset used for this analysis presents several limitations that must be acknowledged to provide a comprehensive understanding of the findings.
 
 **Privacy and Respect for the Deceased**: Due to ethical considerations, certain sensitive information such as age and location of death was not collected. This lack of data may limit the ability to perform more granular analyses related to demographic factors influencing mortality rates among shelter residents.
@@ -66,15 +73,20 @@ The dataset used for this analysis presents several limitations that must be ack
 By recognizing these limitations, the analysis aims to provide a clearer context for the findings and to encourage further research that can fill these gaps and enhance understanding of mortality trends among shelter residents.
 
 
-## Similar Datasets
+## Similar Datasets {#sec-sim}
 The dataset titled Deaths of People Experiencing Homelessness, from @toronto_homelessness_deaths, provides information on the deaths of homeless individuals, which is somewhat similar to our current study of deaths among Toronto shelter residents. One notable advantage of this dataset is that it includes a detailed CSV file outlining the causes of death, offering valuable insights into the factors contributing to mortality in this population.
 
 However, the dataset containing the causes of death cannot be downloaded directly, which limits the accessibility and availability of our analysis. The accessible data variables align perfectly with our research dataset but only cover the period from 2017 to 2023. The lack of longitudinal data means it does not align with the comprehensive timeline of our study, which spans from January 2007 to August 2024. Therefore, although this dataset provides certain advantages, the limitations regarding its time span and accessibility led to its exclusion from our viable research options.
 
+## Measurement {#sec-measurement}
+Within this data set, the Structured Reporting System facilitates the collection of information regarding the death of shelter residents. Shelter operators are required to notify the City of Toronto within 24 hours of the death of a current or recent shelter resident and then submit a detailed written report within 30 days. This systematic approach, in place since 2007 and reviewed annually by Toronto Housing and Support Services, ensures timely and consistent data collection. The structured reporting requirement imposes a level of discipline on shelter operators to ensure that deaths are not only reported in a timely manner, but also fully documented, thereby enhancing the integrity and credibility of the dataset.
+
+ However, certain limitations affect the completeness and reliability of the data. For example, due to privacy concerns, personal information such as names, dates of birth, and specific places of death are not collected. This limits the granularity of the data and can hinder deeper analysis, such as correlations with demographic or location-specific factors. In addition, shelter operators often do not have access to death certificates or information on causes of death, so the dataset lacks this critical context that could be important for understanding the factors contributing to mortality among shelter residents.
+
+Improvements to the measurement process could include better integration with public health and legal entities to access more detailed information about deaths, including cause of death, while still protecting individual privacy. This improvement would provide a more holistic view of the factors influencing mortality rates among shelter residents, allowing for more informed policy decisions to address health and safety issues in shelters.
 
 
-
-## Overall Visualization
+## Overall Visualization {#sec-overview}
 In the following section, I will present a series of visualizations that analyze the number of deaths among shelter residents over time, highlighting the gender distribution and overall data trends. These charts will provide a clearer understanding of the data composition and allow for an insightful examination of how the number of deaths in this population has evolved.
 
 ### Trend Over Time
@@ -82,9 +94,6 @@ In the following section, I will present a series of visualizations that analyze
 Figure @fig-shelter-death-line, created by @citeR, shows the total number of deaths of Toronto shelter residents each year from January 2007 to August 2024, divided into 15 sub-graphs, arranged in 5 rows and 3 columns by year. This layout allows readers to clearly compare the trend of deaths from one year to the next and observe potential seasonal changes.
 
 ```{r fig-shelter-death-line, fig.cap="Deaths in Toronto Shelters Over Time (2007.01-2024.08)", echo=FALSE, message=FALSE, warning=FALSE, fig.width=9, fig.height=6}
-# Read the analysis data of shelter residence death.
-shelter_death_data <- read_csv("../data/analysis_data/shelter_residences_death_analysis_data.csv", show_col_types = FALSE) 
-
 # Sort the month data in order
 shelter_death_data$month <- factor(shelter_death_data$month, levels = month.abb)
 
@@ -210,52 +219,65 @@ ggplot(month_deaths, aes(x = month, y = total_monthly_deaths, group = 1)) +
 ```
 
 # Results{#sec-result}
+As time progresses, it is evident from Figures @fig-shelter-death-bar and @fig-annual-death that the number of deaths among shelter residents has increased. Potential reasons for this trend may include changes in the economic landscape, shifts in the overall population, policy modifications, and factors related to the pandemic.
 
-Our results are summarized in @tbl-modelresults.
+Regarding monthly variations, while Figure @fig-monthly-death illustrates a noticeable peak in January and a low in September, a comprehensive view of the data in Figure @fig-shelter-death-line suggests that seasonal changes do not appear to have a significant correlation with the number of deaths. One possible explanation for this phenomenon could be related to the timing of the pandemic's outbreak.
 
-```{r}
-#| echo: false
-#| eval: true
-#| warning: false
-#| message: false
-
-```
-
-```{r}
-#| echo: false
-#| eval: true
-#| label: tbl-modelresults
-#| tbl-cap: "Explanatory models of flight time based on wing width and wing length"
-#| warning: false
-
-
-```
-
-
-
+In terms of gender composition, male deaths have consistently constituted the highest proportion from 2007 to 2023, indicating a potential underlying vulnerability. However, this trend may also be influenced by the higher proportion of males residing in shelters.
 
 # Discussion{#sec-discussion}
 
-## First discussion point {#sec-first-point}
-
-If my paper were 10 pages, then should be be at least 2.5 pages. The discussion is a chance to show off what you know and what you learnt from all this. 
-
-## Second discussion point
-
-## Third discussion point
-
+## suammry
+This article examines trends in mortality among shelter residents in Toronto from 2007 to 2023, with a focus on gender distribution. Our analysis shows that there was an upward trend in deaths during this period, with a higher proportion of men dying.
 ## Weaknesses and next steps
 
-Weaknesses and next steps should also be included.
+In exploring the implications of these findings, we gain valuable insights into the complex interplay of economic, social, and health factors that affect shelter residents. The data suggest that economic downturns, policy changes, and global health events may exacerbate the vulnerability of this population, warranting a reassessment of current support systems and interventions. In addition, the lack of a clear seasonal pattern in mortality suggests that other factors, such as the pandemic, may be masking typical seasonal effects and warrant further investigation.
 
-\newpage
+While the results highlight important issues, certain limitations must be acknowledged. The dataset used for this analysis may not fully capture the demographics of the shelter population, such as sex composition and health status. In addition, the analysis relied on reported deaths, which may be inaccurate or underreported. Future research should aim to incorporate more comprehensive demographic data, such as data on the total shelter population and its gender composition, causes of death, etc., to improve our understanding of the factors driving these trends.
+
+Finally, this study highlights several areas for future research. Further research could focus on the specific causes of mortality among shelter residents and the effectiveness of current policies and programs designed to reduce mortality among this vulnerable population. By addressing these gaps, we can better inform policy decisions and improve outcomes for people experiencing homelessness.
 
 \appendix
-
 # Appendix {-}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Get first 10 lines in the data set as a sample
+example_table <- shelter_death_data %>%
+  slice(1:10)
+
+example_table %>%
+  kbl(caption = "Sample Table of Deaths in Toronto Shelters (2007-2023)",
+      col.names = c("ID", "Year", "Month", "Total decedents", "male", "female", "Others")) %>%
+  kable_styling(full_width = FALSE, position = "center", latex_options = "scale_down") %>%
+  kable_classic(full_width = FALSE, html_font = "Cambria")
+
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# summarize the data group by year
+summary_table <- shelter_death_data %>%
+  filter(year >= 2007 & year <= 2023) %>%
+  group_by(year) %>%
+  summarise(
+    total_deaths = sum(total_decedents),  # total death num
+    mean_deaths = round(mean(total_decedents), 2),  # average death num each month, rounded to 2 decimal places
+    median_deaths = round(median(total_decedents), 2),  # median, rounded
+    min_deaths = min(total_decedents),  # minimum value
+    max_deaths = max(total_decedents),  # maximum value
+    male_ratio = round(sum(male) / total_deaths * 100, 2),  # ratio of male death, rounded
+    female_ratio = round(sum(female) / total_deaths * 100, 2),  # ratio of female death, rounded
+    # other_ratio = round(sum(transgender_non_binary_two_spirit, na.rm = TRUE) / total_deaths * 100, 2)  # ratio of death of other genders, rounded
+    other_ratio = ifelse(any(is.na(shelter_death_data$transgender_non_binary_two_spirit)), NA,round(sum(transgender_non_binary_two_spirit, na.rm = TRUE) / total_deaths * 100, 2))  
+    # ratio of death of other genders, rounded
+  )
+summary_table %>% 
+  kbl(caption = "Annual Summary of Deaths in Toronto Shelters (2007-2023)", 
+      col.names = c("Year", "Total Deaths", "Mean", "Median", "Min", "Max", "Male Ratio (%)", "Female Ratio (%)", "Other Ratio (%)")) %>%
+  kable_styling(full_width = FALSE, position = "center", latex_options = "scale_down") %>%
+  kable_classic(full_width = FALSE, html_font = "Cambria") %>%
+  add_header_above(c(" " = 1, "Deaths Summary" = 5, "Gender Ratios" = 3))
+```
 
 
-# Additional data details
 
 
 \newpage
