@@ -68,8 +68,7 @@ The dataset used for this analysis presents several limitations that must be ack
 
 **Absence of Comparable Datasets**: It is essential to consider that the dataset could be enriched by including broader contextual variables. Specifically, information about the total shelter population and its gender composition, age distribution, and health status of residents would provide a more nuanced understanding of the factors contributing to mortality in these settings. Such data would allow for deeper insights into the demographic profiles of those affected and could better inform policies aimed at addressing the challenges of homelessness and shelter living.
 
-**Data Quality and Cleaning**: The dataset required careful cleaning to address issues such as missing values and inconsistencies, particularly in the reporting of deaths by gender. Although high-level cleaning was conducted to ensure the reliability of the data, the absence of certain variables may still introduce biases or limit the interpretability of the results.
-
+**Data Quality and Cleaning**: The dataset misses values of transgender/Non-binary/two-spirit decedents until 2020 due to lack of awareness of gender identification. The missing values only affect the research in gender vulnerability field and it is hard to be fulfilled. In our research, the missing value is replaced with 0 mostly. The value keeps being NA when calculate the death ratio of each gender. 
 
 By recognizing these limitations, the analysis aims to provide a clearer context for the findings and to encourage further research that can fill these gaps and enhance understanding of mortality trends among shelter residents.
 
@@ -90,8 +89,7 @@ Improvements to the measurement process could include better integration with pu
 ## Overall Visualization {#sec-overview}
 In the following section, I will present a series of visualizations that analyze the number of deaths among shelter residents over time, highlighting the gender distribution and overall data trends. These charts will provide a clearer understanding of the data composition and allow for an insightful examination of how the number of deaths in this population has evolved. 
 
-### Trend Over Time
-
+### Trend Over Time {#sec-time}
 @fig-shelter-death-line, created by @citeR, shows the total number of deaths of Toronto shelter residents each year from January 2007 to August 2024, divided into 15 sub-graphs, arranged in 5 rows and 3 columns by year. This layout allows readers to clearly compare the trend of deaths from one year to the next and observe potential seasonal changes.
 
 ```{r fig-shelter-death-line, fig.cap="Deaths in Toronto Shelters Over Time (2007.01-2024.08)", echo=FALSE, message=FALSE, warning=FALSE, fig.width=9, fig.height=6}
@@ -212,9 +210,9 @@ ggplot(annual_deaths, aes(x = year, y = total_yearly_deaths)) +
 ### Compariasion Over Month
 @fig-monthly-death shows the aggregated monthly death counts for shelter residents from 2007 to 2023. This data was derived by summing the death counts for each January from 2007 to 2023, resulting in a comprehensive data set for January, and repeating this process for each of the other months, resulting in data for all twelve months.
 
-The purpose of this visualization is to analyze whether certain months have higher mortality rates. It opens the door to exploring potential seasonal influences on mortality rates, such as the impact of extreme temperatures or adverse weather conditions, which could contribute to increased mortality among shelter residents.
+The purpose of this visualization is to analyze whether certain months have higher mortality rates. It helps to exploring potential seasonal influences on mortality rates, such as the impact of extreme temperatures or adverse weather conditions, which could contribute to increased mortality among shelter residents.
 
-The current findings, shown in the line graph, indicate that January and November have the highest mortality rates, while March and September have the lowest mortality rates. These findings highlight the need for further research into the factors influencing these monthly variations, which could inform targeted interventions to improve the health and safety of shelter residents.
+The current findings, shown in the line graph, indicate that January and November have the highest mortality rates, while March and September have the lowest mortality rates, which was different in what we find in @sec-time. These findings highlight the need for further research into the factors influencing these monthly variations, which could inform targeted interventions to improve the health and safety of shelter residents.
 
 ```{r fig-monthly-death, fig.cap="Monthly Mortality Trends Among Shelter Residents (2007-2023)", echo=FALSE, message=FALSE, warning=FALSE}
 # calculate the annual death
