@@ -212,7 +212,7 @@ ggplot(annual_deaths, aes(x = year, y = total_yearly_deaths)) +
 
 The purpose of this visualization is to analyze whether certain months have higher mortality rates. It helps to exploring potential seasonal influences on mortality rates, such as the impact of extreme temperatures or adverse weather conditions, which could contribute to increased mortality among shelter residents.
 
-The current findings, shown in the line graph, indicate that January and November have the highest mortality rates, while March and September have the lowest mortality rates, which was different in what we find in @sec-time. These findings highlight the need for further research into the factors influencing these monthly variations, which could inform targeted interventions to improve the health and safety of shelter residents.
+The current findings, shown in the line graph, indicate that January and November have the highest mortality rates, while March and September have the lowest mortality rates, which was different in what we find in @sec-time. These insights highlight the need for further investigation into the factors influencing these monthly variations to inform targeted interventions and improve the health and safety of shelter residents.
 
 ```{r fig-monthly-death, fig.cap="Monthly Mortality Trends Among Shelter Residents (2007-2023)", echo=FALSE, message=FALSE, warning=FALSE}
 # calculate the annual death
