@@ -261,11 +261,16 @@ Finally, this study highlights several areas for future research. Further resear
 
 \newpage
 \appendix
+
 # Appendix {#sec-appendix}
+Table 1 shows the a sample how data is like in the original dataset from @toronto_shelter_deaths provided by @opendatatoronto. It is the first 5 lines in the dataset.
+
+Table 2 shows the summary of our dataset. It contains the total decedents number, monthly average deaths, minimum, maximum and median of the each year. It also provide the ratio of different gender in the shelter decedents each year. 
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-# Get first 10 lines in the data set as a sample
+# Get first 20 lines in the data set as a sample
 example_table <- shelter_death_data %>%
-  slice(1:10)
+  slice(1:5)
 
 example_table %>%
   kbl(
@@ -282,6 +287,8 @@ example_table %>%
   ) %>%
   kable_classic(full_width = FALSE, html_font = "Cambria")
 ```
+
+
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 # summarize the data group by year
@@ -326,11 +333,7 @@ summary_table %>%
 ```
 
 
-
-
 \newpage
-
-
 # References
 
 
