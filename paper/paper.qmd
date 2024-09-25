@@ -6,7 +6,7 @@ author:
 thanks: "Code and data are available at: https://github.com/xinqiyue/ShelterDeath."
 date: today
 date-format: long
-abstract: "Trough the analysis on the data about deaths of shelter residents, we found that the total number of deaths of shelter residences is increasing year by year. The proportion of male deaths is relatively higher. The findings provide insights into the factors affecting shelter residents' well-being and can guide policies to address homelessness, improve living conditions, and tackle health-related issues in this vulnerable population."
+abstract: "Trough the analysis on the data about deaths of shelter residents, we found that the total number of deaths of shelter residences is increasing year by year. The proportion of male deaths is relatively higher. And seasonal factors does not affect much on it. The findings provide insights into the factors affecting shelter residents' well-being and can guide policies to address homelessness, improve living conditions, and tackle health-related issues in this vulnerable population."
 format: pdf
 number-sections: true
 bibliography: references.bib
@@ -87,7 +87,7 @@ Improvements to the measurement process could include better integration with pu
 
 
 ## Overall Visualization {#sec-overview}
-In the following section, I will present a series of visualizations that analyze the number of deaths among shelter residents over time, highlighting the gender distribution and overall data trends. These charts will provide a clearer understanding of the data composition and allow for an insightful examination of how the number of deaths in this population has evolved.
+In the following section, I will present a series of visualizations that analyze the number of deaths among shelter residents over time, highlighting the gender distribution and overall data trends. These charts will provide a clearer understanding of the data composition and allow for an insightful examination of how the number of deaths in this population has evolved. There are 212 observations in the original dataset in total and there is no special cleaning methods needed as the data is already clear enough. See Appendix @Appendix for the summary of the dataset.
 
 ### Trend Over Time
 
@@ -229,16 +229,17 @@ In terms of gender composition, male deaths have consistently constituted the hi
 
 ## suammry
 This article examines trends in mortality among shelter residents in Toronto from 2007 to 2023, with a focus on gender distribution. Our analysis shows that there was an upward trend in deaths during this period, with a higher proportion of men dying.
-## Weaknesses and next steps
 
+## Weaknesses and next steps
 In exploring the implications of these findings, we gain valuable insights into the complex interplay of economic, social, and health factors that affect shelter residents. The data suggest that economic downturns, policy changes, and global health events may exacerbate the vulnerability of this population, warranting a reassessment of current support systems and interventions. In addition, the lack of a clear seasonal pattern in mortality suggests that other factors, such as the pandemic, may be masking typical seasonal effects and warrant further investigation.
 
 While the results highlight important issues, certain limitations must be acknowledged. The dataset used for this analysis may not fully capture the demographics of the shelter population, such as sex composition and health status. In addition, the analysis relied on reported deaths, which may be inaccurate or underreported. Future research should aim to incorporate more comprehensive demographic data, such as data on the total shelter population and its gender composition, causes of death, etc., to improve our understanding of the factors driving these trends.
 
 Finally, this study highlights several areas for future research. Further research could focus on the specific causes of mortality among shelter residents and the effectiveness of current policies and programs designed to reduce mortality among this vulnerable population. By addressing these gaps, we can better inform policy decisions and improve outcomes for people experiencing homelessness.
 
+\newpage
 \appendix
-# Appendix {-}
+# Appendix {#Appendix}
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 # Get first 10 lines in the data set as a sample
 example_table <- shelter_death_data %>%

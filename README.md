@@ -2,7 +2,14 @@
 
 ## Overview
 
-This repo provides students with a foundation for their own projects associated with *Telling Stories with Data*. You do not need every aspect for every paper and you should delete aspects that you do not need.
+This project explores the growing concern of mortality among residents of Toronto's shelter system, with a focus on identifying trends and disparities in deaths between 2007 and 2024. Using data from OpenToronto, the study seeks to shed light on the demographics and seasonal variations that may contribute to these findings. The dataset includes key variables such as year, month, gender distribution, and total number of deaths.
+
+The analysis shows that the number of deaths has steadily increased over the years, with a significant gender disparity: male deaths consistently account for the majority of fatalities. In addition, the analysis of seasonal trends shows that mortality peaks in the colder months of January and November, although there is no consistent seasonal pattern over the entire timeline. This suggests that other factors, such as the COVID-19 pandemic and social policy changes, may have a greater impact on mortality rates.
+
+The project uses a variety of statistical and visualization techniques to illustrate these trends. The findings underscore the importance of addressing gender-specific vulnerabilities and the critical need for public health interventions to reduce shelter mortality. The analysis also highlights the limitations of the dataset, including the lack of data on the demographics and health status of the entire shelter population, and gaps in information on gender identity before 2020. 
+
+
+By providing insights into these patterns, the project aims to inform future interventions and policies aimed at improving the living conditions and health outcomes of people living in shelters.
 
 
 ## File Structure
@@ -19,12 +26,4 @@ The repo is structured as:
 
 ## Statement on LLM usage
 
-Aspects of the code were written with the help of the auto-complete tool, Codriver. The abstract and introduction were written with the help of ChatHorse and the entire chat history is available in inputs/llms/usage.txt.
-
-## Some checks
-
-- [ ] Change the rproj file name so that it's not starter_folder.Rproj
-- [ ] Change the README title so that it's not Starter folder
-- [ ] Remove files that you're not using
-- [ ] Update comments in R scripts
-- [ ] Remove this checklist
+Aspects of the code were written with the help of ChatGPT. The Abstract, Introduction and Data section were written with the help of ChatGPT and the entire chat history is available in inputs/llms/usage.txt.
