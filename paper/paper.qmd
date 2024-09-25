@@ -208,7 +208,7 @@ ggplot(annual_deaths, aes(x = year, y = total_yearly_deaths)) +
 \newpage
 
 ### Compariasion Over Month
-@fig-monthly-death shows the aggregated monthly death counts for shelter residents from 2007 to 2023. This data was derived by summing the death counts for each January from 2007 to 2023, resulting in a comprehensive data set for January, and repeating this process for each of the other months, resulting in data for all twelve months.
+@fig-monthly-death, created by @citeR, shows the aggregated monthly death counts for shelter residents from 2007 to 2023. This data was derived by summing the death counts for each January from 2007 to 2023, resulting in a comprehensive data set for January, and repeating this process for each of the other months, resulting in data for all twelve months.
 
 The purpose of this visualization is to analyze whether certain months have higher mortality rates. It helps to exploring potential seasonal influences on mortality rates, such as the impact of extreme temperatures or adverse weather conditions, which could contribute to increased mortality among shelter residents.
 
@@ -263,9 +263,9 @@ Finally, this study highlights several areas for future research. Further resear
 \appendix
 
 # Appendix {#sec-appendix}
-Table 1 shows the a sample how data is like in the original dataset from @toronto_shelter_deaths provided by @opendatatoronto. It is the first 5 lines in the dataset.
+Table 1, created by @citeR, shows the a sample how data is like in the original dataset from @toronto_shelter_deaths provided by @opendatatoronto. It is the first 5 lines in the dataset.
 
-Table 2 shows the summary of our dataset. It contains the total decedents number, monthly average deaths, minimum, maximum and median of the each year. It also provide the ratio of different gender in the shelter decedents each year. 
+Table 2, created by @citeR, shows the summary of our dataset. It contains the total decedents number, monthly average deaths, minimum, maximum and median of the each year. It also provide the ratio of different gender in the shelter decedents each year. 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 # Get first 20 lines in the data set as a sample
