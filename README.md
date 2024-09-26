@@ -26,4 +26,4 @@ The repo is structured as:
 
 ## Statement on LLM usage
 
-Aspects of the code and text content of the paper were written with the help of ChatGPT. And the entire chat history is available in inputs/llms/usage.txt.
+Aspects of the code and text content of the paper were written with the help of ChatGPT. And the overview section of the Readme file were also written with help of ChatGPT. The entire chat history is available in inputs/llms/usage.txt.
