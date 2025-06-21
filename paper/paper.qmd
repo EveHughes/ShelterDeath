@@ -89,7 +89,7 @@ In the following section, I will present a series of visualizations that analyze
 ### Trend Over Time {#sec-time}
 @fig-shelter-death-line, created by @citeR, shows the total number of deaths of Toronto shelter residents each year from January 2007 to August 2024, divided into 15 sub-graphs, arranged in 5 rows and 3 columns by year. This layout allows readers to clearly compare the trend of deaths from one year to the next and observe potential seasonal changes.
 ```{python}
-#| label: fig-shelter-death-line
+#| label: fig-shelter-death-line 
 #| fig-cap: "Deaths in Toronto Shelters Over Time (2007.01–2024.08)"
 #| echo: false
 #| message: false
@@ -98,58 +98,47 @@ In the following section, I will present a series of visualizations that analyze
 #| fig-height: 6
 
 # Load the data
-df = pd.read_csv("../data/analysis_data/shelter_residences_death_analysis_data.csv")
+shelter_death_data = pd.read_csv("../data/analysis_data/shelter_residences_death_analysis_data.csv")
 
-# Filter for years 2007–2023
-filtered = df[(df["year"] >= 2007) & (df["year"] <= 2023)].copy()
+# Order the months
+month_order = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+               "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+shelter_death_data["month"] = pd.Categorical(
+    shelter_death_data["month"], categories=month_order, ordered=True
+)
 
-# Group by year and compute summary stats
-summary = filtered.groupby("year").agg(
-    total_deaths=("total_decedents", "sum"),
-    mean_deaths=("total_decedents", lambda x: round(x.mean(), 2)),
-    median_deaths=("total_decedents", lambda x: round(x.median(), 2)),
-    min_deaths=("total_decedents", "min"),
-    max_deaths=("total_decedents", "max"),
-    male_sum=("male", "sum"),
-    female_sum=("female", "sum"),
-    other_sum=("transgendernonbinarytwospirit", lambda x: x.sum(skipna=True))
-).reset_index()
+# Prepare facet layout: 3 columns
+years = sorted(shelter_death_data["year"].unique())
+ncols = 3
+nrows = (len(years) + ncols - 1) // ncols
 
-# Calculate gender ratios
-summary["male_ratio"] = round(summary["male_sum"] / summary["total_deaths"] * 100, 2)
-summary["female_ratio"] = round(summary["female_sum"] / summary["total_deaths"] * 100, 2)
+# Set sharey=True to unify Y-axis scale across all facets
+fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(9, nrows * 2.5), sharey=True)
+axes = axes.flatten()
 
-# Handle possible NA case in other gender ratio
-if df["transgendernonbinarytwospirit"].isna().any():
-    summary["other_ratio"] = np.nan
-else:
-    summary["other_ratio"] = round(summary["other_sum"] / summary["total_deaths"] * 100, 2)
+# Plot each year
+for i, year in enumerate(years):
+    ax = axes[i]
+    yearly_data = shelter_death_data[shelter_death_data["year"] == year].sort_values("month")
+    ax.plot(yearly_data["month"], yearly_data["total_decedents"], color="black", linewidth=1)
+    ax.scatter(yearly_data["month"], yearly_data["total_decedents"], color="pink", s=40)
 
-# Keep only relevant columns and rename for display
-summary_table = summary[[
-    "year", "total_deaths", "mean_deaths", "median_deaths", "min_deaths", "max_deaths",
-    "male_ratio", "female_ratio", "other_ratio"
-]].rename(columns={
-    "year": "Year",
-    "total_deaths": "Total Deaths",
-    "mean_deaths": "Mean",
-    "median_deaths": "Median",
-    "min_deaths": "Min",
-    "max_deaths": "Max",
-    "male_ratio": "Male Ratio (%)",
-    "female_ratio": "Female Ratio (%)",
-    "other_ratio": "Other Ratio (%)"
-})
+    ax.set_title(str(year), fontsize=10)
+    ax.set_xlabel("Month")
+    ax.set_ylabel("Total Deaths")
+    ax.tick_params(axis='x', rotation=45)
 
-# Display styled table with caption
-summary_table.style.set_caption("Annual Summary of Deaths in Toronto Shelters (2007–2023)") \
-    .set_table_styles([
-        {"selector": "caption", "props": [("caption-side", "top"), ("font-size", "110%"), ("font-weight", "bold")]},
-        {"selector": "th", "props": [("text-align", "center")]},
-        {"selector": "td", "props": [("text-align", "center")]}
-    ]) \
-    .set_properties(**{"font-family": "Cambria"}) \
-    .format(na_rep="NA")
+# Hide any unused subplots
+for j in range(i + 1, len(axes)):
+    fig.delaxes(axes[j])
+
+# Add a main title
+fig.suptitle("Deaths in Toronto Shelters Over Time (2007.01–2024.08)",
+             fontsize=16, fontweight='bold', y=1.02)
+
+plt.tight_layout()
+plt.show()
+
 ```
 Based on the generated line graphs, the following conclusions can be drawn:
 
