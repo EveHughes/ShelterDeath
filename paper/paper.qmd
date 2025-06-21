@@ -12,20 +12,17 @@ number-sections: true
 bibliography: references.bib
 ---
 
-```{r}
+```{python}
 #| include: false
 #| warning: false
 #| message: false
 
-library(kableExtra)
-library(tidyverse)
-library(palmerpenguins)
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
 
-# Read the analysis data of shelter residence death.
-shelter_death_data <-
-  read_csv("../data/analysis_data/shelter_residences_death_analysis_data.csv",
-    show_col_types = FALSE
-  )
+# Read the analysis data of shelter residence deaths
+shelter_death_data = pd.read_csv("../data/analysis_data/shelter_residences_death_analysis_data.csv")
 ```
 
 
@@ -91,28 +88,68 @@ In the following section, I will present a series of visualizations that analyze
 
 ### Trend Over Time {#sec-time}
 @fig-shelter-death-line, created by @citeR, shows the total number of deaths of Toronto shelter residents each year from January 2007 to August 2024, divided into 15 sub-graphs, arranged in 5 rows and 3 columns by year. This layout allows readers to clearly compare the trend of deaths from one year to the next and observe potential seasonal changes.
+```{python}
+#| label: fig-shelter-death-line
+#| fig-cap: "Deaths in Toronto Shelters Over Time (2007.01–2024.08)"
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 9
+#| fig-height: 6
 
-```{r fig-shelter-death-line, fig.cap="Deaths in Toronto Shelters Over Time (2007.01-2024.08)", echo=FALSE, message=FALSE, warning=FALSE, fig.width=9, fig.height=6}
-# Sort the month data in order
-shelter_death_data$month <- factor(shelter_death_data$month, levels = month.abb)
+# Load the data
+df = pd.read_csv("../data/analysis_data/shelter_residences_death_analysis_data.csv")
 
-# Get line graph, showing the death trend
-ggplot(shelter_death_data, aes(x = month, y = total_decedents, group = year)) +
-  geom_line(size = 1, color = "black") + # get line graph
-  geom_point(size = 2, color = "pink") + # add points on value in each year
-  labs(
-    title = "Deaths in Toronto Shelters Over Time (2007.01-2024.08)",
-    x = "Month",
-    y = "Total Deaths"
-  ) + # add title and name of the axis
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
-    axis.title = element_text(size = 12),
-    axis.text.x = element_text(angle = 45, hjust = 1)
-    # Rotate horizontal axis labels to avoid overlapping
-  ) +
-  facet_wrap(~year, ncol = 3)
+# Filter for years 2007–2023
+filtered = df[(df["year"] >= 2007) & (df["year"] <= 2023)].copy()
+
+# Group by year and compute summary stats
+summary = filtered.groupby("year").agg(
+    total_deaths=("total_decedents", "sum"),
+    mean_deaths=("total_decedents", lambda x: round(x.mean(), 2)),
+    median_deaths=("total_decedents", lambda x: round(x.median(), 2)),
+    min_deaths=("total_decedents", "min"),
+    max_deaths=("total_decedents", "max"),
+    male_sum=("male", "sum"),
+    female_sum=("female", "sum"),
+    other_sum=("transgendernonbinarytwospirit", lambda x: x.sum(skipna=True))
+).reset_index()
+
+# Calculate gender ratios
+summary["male_ratio"] = round(summary["male_sum"] / summary["total_deaths"] * 100, 2)
+summary["female_ratio"] = round(summary["female_sum"] / summary["total_deaths"] * 100, 2)
+
+# Handle possible NA case in other gender ratio
+if df["transgendernonbinarytwospirit"].isna().any():
+    summary["other_ratio"] = np.nan
+else:
+    summary["other_ratio"] = round(summary["other_sum"] / summary["total_deaths"] * 100, 2)
+
+# Keep only relevant columns and rename for display
+summary_table = summary[[
+    "year", "total_deaths", "mean_deaths", "median_deaths", "min_deaths", "max_deaths",
+    "male_ratio", "female_ratio", "other_ratio"
+]].rename(columns={
+    "year": "Year",
+    "total_deaths": "Total Deaths",
+    "mean_deaths": "Mean",
+    "median_deaths": "Median",
+    "min_deaths": "Min",
+    "max_deaths": "Max",
+    "male_ratio": "Male Ratio (%)",
+    "female_ratio": "Female Ratio (%)",
+    "other_ratio": "Other Ratio (%)"
+})
+
+# Display styled table with caption
+summary_table.style.set_caption("Annual Summary of Deaths in Toronto Shelters (2007–2023)") \
+    .set_table_styles([
+        {"selector": "caption", "props": [("caption-side", "top"), ("font-size", "110%"), ("font-weight", "bold")]},
+        {"selector": "th", "props": [("text-align", "center")]},
+        {"selector": "td", "props": [("text-align", "center")]}
+    ]) \
+    .set_properties(**{"font-family": "Cambria"}) \
+    .format(na_rep="NA")
 ```
 Based on the generated line graphs, the following conclusions can be drawn:
 
@@ -131,78 +168,120 @@ These conclusions provide important insights into the overall mortality trends o
 Several important conclusions can be drawn from the visualization. First, the proportion of male deaths remains consistently the highest throughout the years observed, indicating a significant gender disparity in mortality rates among shelter residents. In addition, there is a noticeable upward trend in the overall number of deaths, suggesting a growing concern for the well-being of this vulnerable population. It can also be seen clearly from the line graph of @fig-annual-death. Notably, 2021 stands out as the peak year for mortality. This can be seen clearly in @fig-annual-death too. This raises questions about the factors contributing to this spike and the broader implications for public health and social support systems.
 
 
-```{r fig-shelter-death-bar, fig.cap="Annual Death Counts in Toronto Shelters With Gender Distribution (2007-2023)", echo=FALSE, message=FALSE, warning=FALSE, fig.width=10, fig.height=6}
-annual_death_counts_bar <- shelter_death_data %>%
-  filter(year >= 2007 & year <= 2023) %>%
-  group_by(year) %>%
-  summarise(
-    total_deaths = sum(total_decedents),
-    male_deaths = sum(male),
-    female_deaths = sum(female),
-    other_deaths = sum(transgender_non_binary_two_spirit, na.rm = TRUE)
-  ) %>%
-  pivot_longer(
-    cols = c(male_deaths, female_deaths, other_deaths),
-    names_to = "gender",
-    values_to = "count"
-  )
+```{python} 
+#| label: fig-shelter-death-bar
+#| fig-cap: "Annual Death Counts in Toronto Shelters With Gender Distribution (2007–2023)"
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 10
+#| fig-height: 6
 
-# Create bar chart showing annual death counts in Toronto shelters
-# from 2007 to 2023.
-ggplot(annual_death_counts_bar, aes(
-  x = factor(year),
-  y = count,
-  fill = gender
-)) +
-  geom_bar(stat = "identity", position = "stack") +
-  labs(
-    title = "Annual Death Counts in Toronto
-       Shelters With Gender Distribution (2007-2023)",
-    x = "year",
-    y = "num of death",
-    fill = "gender"
-  ) +
-  scale_fill_manual(
-    values = c(
-      "male_deaths" = "pink",
-      "female_deaths" = "black",
-      "other_deaths" = "gray"
-    ),
-    labels = c("Female", "male", "Other")
-  ) +
-  # change color and the text on the side
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
-    axis.title = element_text(size = 12),
-    axis.text = element_text(size = 10),
-    axis.text.x = element_text(angle = 45, hjust = 1)
-    # Rotate horizontal axis labels to avoid overlapping
-  )
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Load the data
+df = pd.read_csv("../data/analysis_data/shelter_residences_death_analysis_data.csv")
+
+# Filter for years 2007–2023
+df = df[(df["year"] >= 2007) & (df["year"] <= 2023)]
+
+# Group and sum by year
+grouped = df.groupby("year").agg(
+    male_deaths=("male", "sum"),
+    female_deaths=("female", "sum"),
+    other_deaths=("transgendernonbinarytwospirit", "sum")
+).fillna(0)
+
+# Convert to long format
+long_df = grouped.reset_index().melt(id_vars="year", var_name="gender", value_name="count")
+
+# Set color mapping and label override
+color_map = {
+    "male_deaths": "pink",
+    "female_deaths": "black",
+    "other_deaths": "gray"
+}
+label_map = {
+    "male_deaths": "male",
+    "female_deaths": "Female",
+    "other_deaths": "Other"
+}
+
+# Pivot for stacked bar
+pivot_df = long_df.pivot(index="year", columns="gender", values="count").fillna(0)
+pivot_df = pivot_df[color_map.keys()]  # Ensure column order
+
+# Plot
+fig, ax = plt.subplots(figsize=(10, 6))
+
+bottom = None
+for gender in pivot_df.columns:
+    ax.bar(pivot_df.index, pivot_df[gender], label=label_map[gender],
+           bottom=bottom, color=color_map[gender])
+    bottom = pivot_df[gender] if bottom is None else bottom + pivot_df[gender]
+
+# Labels and title
+ax.set_title("Annual Death Counts in Toronto Shelters With Gender Distribution (2007–2023)",
+             fontsize=16, fontweight='bold', ha='center')
+ax.set_xlabel("Year", fontsize=12)
+ax.set_ylabel("Num of Death", fontsize=12)
+ax.set_xticks(pivot_df.index)
+ax.set_xticklabels(pivot_df.index, rotation=45)
+ax.tick_params(axis='both', labelsize=10)
+
+# Legend and theme
+ax.legend(title="Gender", title_fontsize=11)
+ax.grid(True, axis='y', linestyle='--', alpha=0.7)
+ax.set_axisbelow(True)
+
+plt.tight_layout()
+plt.show()
+
 ```
 
-```{r fig-annual-death, fig.cap="Annual Deaths in Toronto Shelters (2007-2023)", echo=FALSE, message=FALSE, warning=FALSE}
-# calculate the annual death
-annual_deaths <- shelter_death_data %>%
-  filter(year >= 2007 & year <= 2023) %>%
-  group_by(year) %>%
-  summarise(total_yearly_deaths = sum(total_decedents), na.rm = TRUE)
+```{python}
+#| label: fig-annual-death
+#| fig-cap: "Annual Deaths in Toronto Shelters (2007–2023)"
+#| echo: false
+#| message: false
+#| warning: false
 
-# get line graph, showing the annual death trend
-ggplot(annual_deaths, aes(x = year, y = total_yearly_deaths)) +
-  geom_line(size = 1, color = "black") + # get line graph
-  geom_point(size = 3, color = "pink") + # add points on value in each year
-  labs(
-    title = "Annual Deaths in Toronto Shelters (2007-2023)",
-    x = "Year",
-    y = "Total Deaths"
-  ) + # add title and name of the axis
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
-    axis.title = element_text(size = 10),
-    axis.text = element_text(size = 8)
-  )
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Load the data
+df = pd.read_csv("../data/analysis_data/shelter_residences_death_analysis_data.csv")
+
+# Filter years and calculate total annual deaths
+annual_deaths = (
+    df[(df["year"] >= 2007) & (df["year"] <= 2023)]
+    .groupby("year", as_index=False)
+    .agg(total_yearly_deaths=("total_decedents", "sum"))
+)
+
+# Plot line chart
+fig, ax = plt.subplots(figsize=(7, 4))
+
+ax.plot(annual_deaths["year"], annual_deaths["total_yearly_deaths"],
+        color="black", linewidth=1)
+ax.scatter(annual_deaths["year"], annual_deaths["total_yearly_deaths"],
+           color="pink", s=40)
+
+# Labels and title
+ax.set_title("Annual Deaths in Toronto Shelters (2007–2023)",
+             fontsize=12, fontweight='bold', ha='center')
+ax.set_xlabel("Year", fontsize=10)
+ax.set_ylabel("Total Deaths", fontsize=10)
+ax.tick_params(axis='both', labelsize=8)
+
+# Apply minimal-style grid
+ax.grid(True, linestyle='--', linewidth=0.5, alpha=0.7)
+ax.set_axisbelow(True)
+
+plt.tight_layout()
+plt.show()
+
 ```
 
 \newpage
@@ -214,30 +293,52 @@ The purpose of this visualization is to analyze whether certain months have high
 
 The current findings, shown in the line graph, indicate that January and November have the highest mortality rates, while March and September have the lowest mortality rates, which was different in what we find in @sec-time. These insights highlight the need for further investigation into the factors influencing these monthly variations to inform targeted interventions and improve the health and safety of shelter residents.
 
-```{r fig-monthly-death, fig.cap="Monthly Mortality Trends Among Shelter Residents (2007-2023)", echo=FALSE, message=FALSE, warning=FALSE}
-# calculate the annual death
-month_deaths <- shelter_death_data %>%
-  filter(year >= 2007 & year <= 2023) %>%
-  group_by(month) %>%
-  summarise(total_monthly_deaths = sum(total_decedents))
+```{python}
+#| label: fig-monthly-death
+#| fig-cap: "Monthly Mortality Trends Among Shelter Residents (2007–2023)"
+#| echo: false
+#| message: false
+#| warning: false
 
-month_deaths$month <- factor(month_deaths$month, levels = month.abb)
+# Load the data
+df = pd.read_csv("../data/analysis_data/shelter_residences_death_analysis_data.csv")
 
-# get line graph, showing the annual death trend
-ggplot(month_deaths, aes(x = month, y = total_monthly_deaths, group = 1)) +
-  geom_line(size = 1, color = "black") + # get line graph
-  geom_point(size = 3, color = "pink") + # add points on value in each year
-  labs(
-    title = "Monthly Mortality Trends Among Shelter Residents (2007-2023)",
-    x = "Month",
-    y = "Total Deaths"
-  ) + # as title and name of the axis
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
-    axis.title = element_text(size = 10),
-    axis.text = element_text(size = 8)
-  )
+# Filter for relevant years and group by month
+month_deaths = (
+    df[(df["year"] >= 2007) & (df["year"] <= 2023)]
+    .groupby("month", as_index=False)
+    .agg(total_monthly_deaths=("total_decedents", "sum"))
+)
+
+# Ensure correct month order
+month_order = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+               "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+month_deaths["month"] = pd.Categorical(month_deaths["month"],
+                                       categories=month_order,
+                                       ordered=True)
+month_deaths = month_deaths.sort_values("month")
+
+# Plot
+fig, ax = plt.subplots(figsize=(7, 4))
+
+ax.plot(month_deaths["month"], month_deaths["total_monthly_deaths"],
+        color="black", linewidth=1)
+ax.scatter(month_deaths["month"], month_deaths["total_monthly_deaths"],
+           color="pink", s=40)
+
+# Labels and theme
+ax.set_title("Monthly Mortality Trends Among Shelter Residents (2007–2023)",
+             fontsize=12, fontweight='bold', ha='center')
+ax.set_xlabel("Month", fontsize=10)
+ax.set_ylabel("Total Deaths", fontsize=10)
+ax.tick_params(axis='both', labelsize=8)
+
+ax.grid(True, linestyle='--', linewidth=0.5, alpha=0.7)
+ax.set_axisbelow(True)
+
+plt.tight_layout()
+plt.show()
+
 ```
 
 # Results{#sec-result}
@@ -267,69 +368,92 @@ Table 1, created by @citeR, shows the a sample how data is like in the original 
 
 Table 2, created by @citeR, shows the summary of our dataset. It contains the total decedents number, monthly average deaths, minimum, maximum and median of the each year. It also provide the ratio of different gender in the shelter decedents each year. 
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-# Get first 20 lines in the data set as a sample
-example_table <- shelter_death_data %>%
-  slice(1:5)
+```{python}
+#| echo: false
+#| message: false
+#| warning: false
 
-example_table %>%
-  kbl(
-    caption = "Sample Table of Deaths in Toronto Shelters (2007-2023)",
-    col.names = c(
-      "ID", "Year", "Month", "Total decedents",
-      "male", "female", "Others"
-    )
-  ) %>%
-  kable_styling(
-    full_width = FALSE,
-    position = "center",
-    latex_options = "scale_down"
-  ) %>%
-  kable_classic(full_width = FALSE, html_font = "Cambria")
+# Load data
+df = pd.read_csv("../data/analysis_data/shelter_residences_death_analysis_data.csv")
+
+# Take first 5 rows as sample
+example_table = df.iloc[:5].copy()
+
+# Rename columns for display
+example_table.columns = [
+    "ID", "Year", "Month", "Total decedents",
+    "male", "female", "Others"
+] + list(example_table.columns[7:])  # In case there are more columns
+
+# Display the table (nicely rendered in Quarto)
+example_table.style.set_caption("Sample Table of Deaths in Toronto Shelters (2007–2023)") \
+    .set_table_styles(
+        [{"selector": "caption", "props": [("caption-side", "top"), ("font-size", "110%"), ("font-weight", "bold")]}]
+    ) \
+    .set_properties(**{"text-align": "center", "font-family": "Cambria"})
+
 ```
 
 
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-# summarize the data group by year
-summary_table <- shelter_death_data %>%
-  filter(year >= 2007 & year <= 2023) %>%
-  group_by(year) %>%
-  summarise(
-    total_deaths = sum(total_decedents), # total death num
-    mean_deaths = round(mean(total_decedents), 2),
-    # average death num each month, rounded to 2 decimal places
-    median_deaths = round(median(total_decedents), 2),
-    # median, rounded
-    min_deaths = min(total_decedents), # minimum value
-    max_deaths = max(total_decedents), # maximum value
-    male_ratio = round(sum(male) / total_deaths * 100, 2),
-    # ratio of male death, rounded
-    female_ratio = round(sum(female) / total_deaths * 100, 2),
-    # ratio of female death, rounded
-    other_ratio =
-      ifelse(any(is.na(shelter_death_data$transgender_non_binary_two_spirit)),
-        NA,
-        round(sum(transgender_non_binary_two_spirit,
-          na.rm = TRUE
-        ) / total_deaths * 100, 2)
-      )
-    # ratio of death of other genders, rounded
-  )
-summary_table %>%
-  kbl(
-    caption = "Annual Summary of Deaths in Toronto Shelters (2007-2023)",
-    col.names = c(
-      "Year", "Total Deaths", "Mean", "Median", "Min", "Max",
-      "Male Ratio (%)", "Female Ratio (%)", "Other Ratio (%)"
-    )
-  ) %>%
-  kable_styling(
-    full_width = FALSE, position = "center",
-    latex_options = "scale_down"
-  ) %>%
-  kable_classic(full_width = FALSE, html_font = "Cambria") %>%
-  add_header_above(c(" " = 1, "Deaths Summary" = 5, "Gender Ratios" = 3))
+```{python}
+#| echo: false
+#| message: false
+#| warning: false
+
+# Load the data
+df = pd.read_csv("../data/analysis_data/shelter_residences_death_analysis_data.csv")
+
+# Filter for years 2007–2023
+filtered = df[(df["year"] >= 2007) & (df["year"] <= 2023)].copy()
+
+# Group by year and compute summary stats
+summary = filtered.groupby("year").agg(
+    total_deaths=("total_decedents", "sum"),
+    mean_deaths=("total_decedents", lambda x: round(x.mean(), 2)),
+    median_deaths=("total_decedents", lambda x: round(x.median(), 2)),
+    min_deaths=("total_decedents", "min"),
+    max_deaths=("total_decedents", "max"),
+    male_sum=("male", "sum"),
+    female_sum=("female", "sum"),
+    other_sum=("transgendernonbinarytwospirit", lambda x: x.sum(skipna=True))
+).reset_index()
+
+# Calculate gender ratios
+summary["male_ratio"] = round(summary["male_sum"] / summary["total_deaths"] * 100, 2)
+summary["female_ratio"] = round(summary["female_sum"] / summary["total_deaths"] * 100, 2)
+
+# Handle possible NA case in other gender ratio
+if df["transgendernonbinarytwospirit"].isna().any():
+    summary["other_ratio"] = np.nan
+else:
+    summary["other_ratio"] = round(summary["other_sum"] / summary["total_deaths"] * 100, 2)
+
+# Keep only relevant columns and rename for display
+summary_table = summary[[
+    "year", "total_deaths", "mean_deaths", "median_deaths", "min_deaths", "max_deaths",
+    "male_ratio", "female_ratio", "other_ratio"
+]].rename(columns={
+    "year": "Year",
+    "total_deaths": "Total Deaths",
+    "mean_deaths": "Mean",
+    "median_deaths": "Median",
+    "min_deaths": "Min",
+    "max_deaths": "Max",
+    "male_ratio": "Male Ratio (%)",
+    "female_ratio": "Female Ratio (%)",
+    "other_ratio": "Other Ratio (%)"
+})
+
+# Display styled table with caption
+summary_table.style.set_caption("Annual Summary of Deaths in Toronto Shelters (2007–2023)") \
+    .set_table_styles([
+        {"selector": "caption", "props": [("caption-side", "top"), ("font-size", "110%"), ("font-weight", "bold")]},
+        {"selector": "th", "props": [("text-align", "center")]},
+        {"selector": "td", "props": [("text-align", "center")]}
+    ]) \
+    .set_properties(**{"font-family": "Cambria"}) \
+    .format(na_rep="NA")
 ```
 
 

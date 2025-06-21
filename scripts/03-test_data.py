@@ -5,32 +5,26 @@
 # Contact: xinqi.yue@mail.utoronto.ca
 # License: MIT
 # Pre-requisites: Need to have simulated data
-# Any other information needed? None
-
 
 #### Workspace setup ####
-library(tidyverse)
+import pandas as pd
 
 #### Test data ####
-shelter_residences_death_data <-
-  read_csv("data/simulated_data/simulated_shelter_residences_death_data.csv")
+df = pd.read_csv("data/simulated_data/simulated_shelter_residences_death_data.csv")
 
-# Test for negative numbers
-shelter_residences_death_data$total_death_num |> min() < 0
+# Test for negative numbers in total deaths
+has_negative_total = (df["total_death_num"] < 0).any()
+print("Any negative total death count:", has_negative_total)
 
-# Test if month are valid
-valid_months <- c(
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-)
-all_correct <- all(months %in% valid_months)
-all_correct
+# Test if months are valid
+valid_months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+all_months_valid = df["month"].isin(valid_months).all()
+print("All months valid:", all_months_valid)
 
-# Test if the total number of death matches the gender distribution
-test_total_num <-
-  shelter_residences_death_data$total_death_num ==
-    shelter_residences_death_data$female_death_num +
-      shelter_residences_death_data$male_death_num +
-      shelter_residences_death_data$other_death_num
-all_match <- all(test_total_num)
-all_match
+# Test if total_death_num equals sum of gender breakdowns
+gender_sum_matches = (df["total_death_num"] ==
+                      df["male_death_num"] +
+                      df["female_death_num"] +
+                      df["other_death_num"]).all()
+print("All gender sums match total:", gender_sum_matches)
